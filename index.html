@@ -484,10 +484,7 @@
         document.getElementById("messageError").textContent = "Please enter a message.";
         hasError = true;
       }
-      if (!captchaResponse) {
-        document.getElementById("captchaError").textContent = "Please verify you are not a robot.";
-        hasError = true;
-      }
+    
 
       if (hasError) return;
 
@@ -526,20 +523,7 @@
 
 
 
-            //show field specific error messages
-            if(error.errors) {
-                error.errors.forEach(err => {
-                    if (err.param === "yourName" ) {
-                        document.getElementById("nameError").textContent = err.msg;
-                    } else if (err.param === "yourEmail") {
-                        document.getElementById("emailError").textContent = err.msg;
-                    } else if (err.param === "subject") {
-                        document.getElementById("subjectError").textContent = err.msg;
-                    } else if (err.param === "message") {
-                        document.getElementById("messageError").textContent = err.msg;
-                    }
-                })
-            }
+    
 
 
         })
