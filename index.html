@@ -455,14 +455,37 @@
 
 
         //gather form data
-        const formData = {
-            yourName: document.getElementById("yourName").value.trim(),
-            yourEmail: document.getElementById("yourEmail").value.trim(),
-            subject: document.getElementById("subject").value.trim(),
-            message: document.getElementById("message").value.trim()
-        }
+        
+            yourName= document.getElementById("yourName").value.trim(),
+            yourEmail= document.getElementById("yourEmail").value.trim(),
+            subject= document.getElementById("subject").value.trim(),
+            message= document.getElementById("message").value.trim()
+        
 
+// Basic front-end validation
+      let hasError = false;
+      if (!yourName) {
+        document.getElementById("nameError").textContent = "Please enter your name.";
+        hasError = true;
+      }
+      if (!yourEmail) {
+        document.getElementById("emailError").textContent = "Please enter your email.";
+        hasError = true;
+      }
+      if (!subject) {
+        document.getElementById("subjectError").textContent = "Please enter a subject.";
+        hasError = true;
+      }
+      if (!message) {
+        document.getElementById("messageError").textContent = "Please enter a message.";
+        hasError = true;
+      }
+      if (!captchaResponse) {
+        document.getElementById("captchaError").textContent = "Please verify you are not a robot.";
+        hasError = true;
+      }
 
+      if (hasError) return;
 
 
         //send from data via fetch API
@@ -471,7 +494,12 @@
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+                yourName,
+                yourEmail,
+                subject,
+                message,
+            })
         })
         .then(async (response) => {
             const data = await response.json();
