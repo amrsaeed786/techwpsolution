@@ -372,30 +372,40 @@
                     <section class="py-5 wow fadeInUp" data-wow-delay="0.1s" id="contact">
                         <h1 class="title pb-3 mb-5">Contact Me</h1>
 						<p class="mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a></p>
-                        <form>
+                        <form id="contactForm">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control border-0 bg-secondary" id="name" placeholder="Your Name">
+                                        <input type="text" class="form-control border-0 bg-secondary" id="yourName" placeholder="Your Name">
                                         <label for="name">Your Name</label>
+                                        <span id="nameError" class="error"></span><br>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control border-0 bg-secondary" id="email" placeholder="Your Email">
+                                        <input type="email" class="form-control border-0 bg-secondary" id="yourEmail" placeholder="Your Email">
                                         <label for="email">Your Email</label>
+                                        <span id="emailError" class="error"></span><br>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
                                         <input type="text" class="form-control border-0 bg-secondary" id="subject" placeholder="Subject">
                                         <label for="subject">Subject</label>
+                                        <span id="subjectError" class="error"></span><br>
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="form-floating">
                                         <textarea class="form-control border-0 bg-secondary" placeholder="Leave a message here" id="message" style="height: 200px"></textarea>
                                         <label for="message">Message</label>
+                                        <span id="messageError" class="error"></span><br>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <div class="g-recaptcha" data-sitekey="6Lf7z3crAAAAANz9T4aqQJCaG_QcGnkmijb6r_lC"></div>
+  <span id="captchaError" class="error"></span><br>
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -403,6 +413,7 @@
                                 </div>
                             </div>
                         </form>
+                        <div id="responseMessage" style="padding-top: 10px;"></div>
                     </section>
                     <!-- Contact End -->
 
@@ -430,13 +441,85 @@
                 </div>
             </div>
         </div>
+<script>
 
+    document.getElementById("contactForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        //clear previous error messages
+        document.querySelectorAll(".error").forEach( (el) => el.textContent = "");
+        document.getElementById("responseMessage").textContent = "";
+
+
+
+
+
+        //gather form data
+        const formData = {
+            yourName: document.getElementById("yourName").value.trim(),
+            yourEmail: document.getElementById("yourEmail").value.trim(),
+            subject: document.getElementById("subject").value.trim(),
+            message: document.getElementById("message").value.trim()
+        }
+
+
+
+
+        //send from data via fetch API
+        fetch("https://techwpsolution.vercel.app/api/v1/users/submit-form", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(async (response) => {
+            const data = await response.json();
+            if(!response.ok) {
+                throw data;
+            }
+
+
+            //show success message
+            document.getElementById("responseMessage").textContent = "Your message has been sent successfully!";
+            document.getElementById("contactForm").reset();
+
+
+
+        })
+        .catch(error => {
+            //global message if available
+            if(error.message) {
+                document.getElementById("responseMessage").innerHTML = `<span class="text-danger">${error.message}</span>`; }
+
+
+
+            //show field specific error messages
+            if(error.errors) {
+                error.errors.forEach(err => {
+                    if (err.param === "yourName" ) {
+                        document.getElementById("nameError").textContent = err.msg;
+                    } else if (err.param === "yourEmail") {
+                        document.getElementById("emailError").textContent = err.msg;
+                    } else if (err.param === "subject") {
+                        document.getElementById("subjectError").textContent = err.msg;
+                    } else if (err.param === "message") {
+                        document.getElementById("messageError").textContent = err.msg;
+                    }
+                })
+            }
+
+
+        })
+    })
+</script>
         
         <!-- Back to Top -->
         <a href="#" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
         
         <!-- JavaScript Libraries -->
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
         <script src="lib/wow/wow.min.js"></script>
         <script src="lib/typed/typed.min.js"></script>
